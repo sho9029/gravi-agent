@@ -1,64 +1,105 @@
-# Gravi Agent
+# ⚡ Gravi Agent
 
-**Antigravity の自動承認・タスクキュー管理エージェント**
+**Antigravity のボタンを自動で押してくれるやつ。**
 
-Antigravity AI エージェントの操作を自動化する VS Code / Antigravity 拡張機能です。
+エージェントが「このファイル変更していい？」「このコマンド実行していい？」と聞いてくるたびにボタンを押す作業、面倒ですよね。Gravi Agent を入れれば、全部自動でやってくれます。
 
-## 機能
+---
 
-### 🤖 Auto-Accept（自動承認）
-- ファイル変更・コマンド実行の承認ボタンを自動クリック
-- MutationObserver によるイベント駆動（連打しない、操作に干渉しない）
-- 危険コマンドのパターンマッチブロック（`rm -rf` 等）
+## 🚀 導入方法（3ステップ）
 
-### 📝 プロンプト送信
-- コマンドパレットからチャットにプロンプトを送信
-- チャット入力欄の自動検出
+### ステップ1: ダウンロード
 
-### 📋 タスクキュー管理
-- **Queue モード**: プロンプトを順次実行（silence 検出で自動進行）
-- **Interval モード**: 一定間隔でプロンプトを定期送信
-- 一時停止・再開・スキップ対応
+👉 **[こちらからダウンロード](https://github.com/anitigravitylab-oss/gravi-agent/releases/latest)**
 
-### 🔒 安全機能
-- 危険コマンドの自動ブロック（正規表現対応）
-- カスタムブロックパターン設定
+`gravi-agent-x.x.x.vsix` をクリックしてダウンロードしてください。
 
-## セットアップ
+### ステップ2: インストール
 
-### 前提条件
-Antigravity を CDP（Chrome DevTools Protocol）フラグ付きで起動する必要があります：
+1. Antigravity を開く
+2. `Ctrl + Shift + P` を押す（コマンドパレットが開きます）
+3. `Extensions: Install from VSIX...` と入力して選択
+4. さっきダウンロードした `.vsix` ファイルを選択
+
+### ステップ3: CDP を有効にする
+
+Gravi Agent は Antigravity のブラウザ機能（CDP）を使って動きます。  
+**初回だけ**、以下の設定が必要です：
+
+#### Windows の場合
+
+Antigravity のショートカットを右クリック → プロパティ → 「リンク先」の末尾に追加：
 
 ```
+ --remote-debugging-port=9004
+```
+
+例：
+```
+"C:\Program Files\Antigravity\antigravity.exe" --remote-debugging-port=9004
+```
+
+#### Mac の場合
+
+ターミナルで以下を実行：
+```bash
 antigravity --remote-debugging-port=9004
 ```
 
-> 初回起動時に Gravi Agent がショートカットの自動修正と再起動を提案します。
+> 💡 Gravi Agent が自動でショートカットを修正してくれる機能もあります。  
+> 初回起動時に「再起動しますか？」と聞かれたら「再起動する」を選んでください。
 
-### インストール
-1. `Ctrl+Shift+P` → `Extensions: Install from VSIX...`
-2. `gravi-agent-x.x.x.vsix` を選択
+---
 
-## コマンド
+## ✅ 使い方
 
-| コマンド | 説明 |
-|---------|------|
-| `Gravi Agent: ON/OFF 切り替え` | Auto-Accept の有効/無効 |
-| `Gravi Agent: プロンプト送信` | チャットにプロンプトを送信 |
-| `Gravi Agent: キュー開始` | タスクキューの実行開始 |
-| `Gravi Agent: キュー停止` | タスクキューの停止 |
-| `Gravi Agent: 設定` | 拡張機能の設定を開く |
+インストール後、Antigravity を再起動すれば **自動的に ON** になります。
 
-## 設定
+画面右下のステータスバーに表示：
+- `⚡ Gravi: ON` → 動作中
+- `🚫 Gravi: OFF` → 停止中
 
-| 設定キー | デフォルト | 説明 |
-|---------|-----------|------|
-| `gravi-agent.autoStart` | `true` | CDP 接続時に自動 ON |
-| `gravi-agent.cdpPort` | `9004` | CDP ポート番号 |
-| `gravi-agent.schedule.mode` | `queue` | `queue` or `interval` |
-| `gravi-agent.schedule.silenceTimeout` | `30` | タスク完了判定の無操作時間（秒） |
-| `gravi-agent.safety.bannedPatterns` | `["rm -rf", ...]` | ブロックするコマンドパターン |
+**クリックで ON/OFF を切り替え** できます。
 
-## License
+---
+
+## 🤖 できること
+
+| 機能 | 説明 |
+|------|------|
+| **Auto-Accept** | Accept / Run / Retry などのボタンを自動クリック |
+| **危険コマンドブロック** | `rm -rf` などの危険なコマンドは自動で止めます |
+| **プロンプト送信** | チャットにプロンプトを自動入力して送信 |
+| **タスクキュー** | 複数のタスクを順番に自動実行 |
+
+---
+
+## ⚙️ 設定
+
+`Ctrl + Shift + P` → `Gravi Agent: 設定` で変更できます。
+
+| 設定 | 初期値 | 説明 |
+|------|--------|------|
+| 自動開始 | ON | 起動時に自動で ON にする |
+| CDP ポート | 9004 | 通常は変更不要 |
+| ブロックパターン | `rm -rf` 等 | 自動承認しないコマンドパターン |
+| Silence タイムアウト | 30秒 | タスク完了を判定する無操作時間 |
+
+---
+
+## ❓ よくある質問
+
+### Q: ステータスバーに何も表示されない
+A: `Ctrl + Shift + P` → `Developer: Reload Window` を試してください。
+
+### Q: ON にしても動かない
+A: CDP が有効になっていません。ステップ3の手順で `--remote-debugging-port=9004` を設定してください。
+
+### Q: 勝手にヤバいコマンドを実行しない？
+A: `rm -rf` や `format c:` などの危険コマンドは自動ブロックされます。設定からパターンを追加できます。
+
+---
+
+## 📜 License
 
 MIT
