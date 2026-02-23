@@ -60,10 +60,10 @@
                 },
                 "gravi-agent.cdpPort": {
                     "type": "number",
-                    "default": 9004,
+                    "default": 9222,
                     "minimum": 1024,
                     "maximum": 65535,
-                    "description": "CDP ポート番号"
+                    "description": "CDP ポート番号（Antigravity の Browser CDP Port と一致させてください）"
                 },
                 "gravi-agent.pollInterval": {
                     "type": "number",

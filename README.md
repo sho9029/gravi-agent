@@ -54,10 +54,10 @@ antigravity --remote-debugging-port=9004
 Antigravity 側の CDP ポート設定と、Gravi Agent のポート設定を **同じ番号** にしてください。
 
 - **Antigravity 側**: 設定 → `Browser CDP Port`（デフォルト: 9222）
-- **Gravi Agent 側**: 設定 → `gravi-agent.cdpPort`（デフォルト: 9004）
+- **Gravi Agent 側**: 設定 → `gravi-agent.cdpPort`（デフォルト: 9222）
 
-どちらかを変更して、**両方同じポート番号** にすればOKです。  
-例: 両方 `9004` にする、または両方 `9222` にする。
+デフォルト設定なら **両方 9222** で一致しているので変更不要です。  
+もし Antigravity 側を変更している場合は、Gravi Agent 側も同じ番号にしてください。
 
 ---
 
