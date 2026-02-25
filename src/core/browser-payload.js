@@ -7,8 +7,10 @@
 (function () {
     "use strict";
 
-    // 二重注入防止
-    if (window.__graviInjected) return;
+    // 既に注入済みなら停止してから再初期化
+    if (window.__graviInjected && window.__graviStop) {
+        window.__graviStop();
+    }
     window.__graviInjected = true;
 
     // ─── 状態 ──────────────────────────────────────────

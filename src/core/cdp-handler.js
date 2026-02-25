@@ -7,6 +7,21 @@ const WebSocket = require('ws');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+
+// browser-payload.js を直接読み込み（中間ファイル不要）
+const BROWSER_PAYLOAD = fs.readFileSync(
+    path.join(__dirname, 'browser-payload.js'), 'utf8'
+);
+
+// 診断ログ
+const DIAG_LOG = path.join(os.tmpdir(), 'gravi-diag.log');
+function diag(msg) {
+    const ts = new Date().toISOString();
+    try { fs.appendFileSync(DIAG_LOG, `[${ts}] ${msg}\n`); } catch (e) { }
+}
+diag(`=== CDPHandler module loaded, __dirname=${__dirname}`);
+diag(`BROWSER_PAYLOAD length=${BROWSER_PAYLOAD.length}`);
 
 class CDPHandler {
     constructor(logger = console.log, port = 9004) {
@@ -99,19 +114,23 @@ class CDPHandler {
     // ─── ペイロード注入 ─────────────────────────────────
     async _inject(id, config) {
         const conn = this.connections.get(id);
-        if (!conn || conn.injected) return;
+        if (!conn || conn.injected) {
+            diag(`_inject skip: id=${id} conn=${!!conn} injected=${conn && conn.injected}`);
+            return;
+        }
 
-        const payloadPath = path.join(__dirname, 'browser-payload.js');
-        const payload = fs.readFileSync(payloadPath, 'utf8');
-
+        diag(`_inject start: id=${id} wsState=${conn.ws.readyState}`);
         try {
-            await this._evaluate(id, payload);
+            await this._evaluate(id, BROWSER_PAYLOAD);
+            diag(`_inject payload eval OK: id=${id}`);
             // 設定を渡してスタート
             const startCmd = `window.__graviStart(${JSON.stringify(config)})`;
             await this._evaluate(id, startCmd);
             conn.injected = true;
+            diag(`_inject complete: id=${id}`);
             this.log(`ペイロード注入完了: ${id}`);
         } catch (e) {
+            diag(`_inject ERROR: id=${id} err=${e.message}`);
             this.log(`注入失敗: ${id} - ${e.message}`);
         }
     }
@@ -220,9 +239,11 @@ class CDPHandler {
     async _refreshConnections(config) {
         try {
             const pages = await this._getPages();
+            diag(`_refresh: ${pages.length} pages found`);
             for (const page of pages) {
                 const id = page.id || page.webSocketDebuggerUrl;
                 if (!this.connections.has(id)) {
+                    diag(`_refresh: new connection for ${id} (${page.title})`);
                     this._connect(id, page.webSocketDebuggerUrl);
                     // 接続が確立するのを少し待つ
                     await new Promise(r => setTimeout(r, 500));
@@ -231,7 +252,7 @@ class CDPHandler {
                 await this._inject(id, config);
             }
         } catch (e) {
-            // CDP不可の場合は静かに失敗
+            diag(`_refresh ERROR: ${e.message}`);
         }
     }
 
