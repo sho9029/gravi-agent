@@ -80,7 +80,7 @@
 
     const REJECT_PATTERNS = [
         'skip', 'reject', 'cancel', 'discard', 'deny',
-        'close', 'refine', 'other', 'dismiss'
+        'close', 'refine', 'other', 'dismiss', 'always run'
     ];
 
     function isAcceptButton(el) {

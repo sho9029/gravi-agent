@@ -2,7 +2,7 @@
     "name": "gravi-agent",
     "displayName": "Gravi Agent",
     "description": "Auto-accept actions, send prompts, and manage task queues for Antigravity AI agent.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "antigravity-lab",
     "license": "MIT",
     "icon": "icon.png",
